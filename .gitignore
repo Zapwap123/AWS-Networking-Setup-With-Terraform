@@ -1,0 +1,12 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+*.tfstate.backup
+crash.log
+
+# Sensitive files
+terraform.tfvars
+*.auto.tfvars
+
