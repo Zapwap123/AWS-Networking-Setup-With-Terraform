@@ -15,6 +15,7 @@ module "public_subnet" {
   vpc_id      = module.vpc.vpc_id
   subnet_cidr = var.public_subnet_cidr
   az          = var.az
+  public      = true
 
   tags = {
     Environment = var.env

@@ -7,7 +7,7 @@ on:
       - completed
 
 jobs:
-  terraform-ci:
+  terraform-cd:
     runs-on: ubuntu-latest
     defaults:
       run:
