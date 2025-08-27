@@ -10,3 +10,6 @@ crash.log
 terraform.tfvars
 *.auto.tfvars
 
+# Files temporarily ignored (Some more work needed)
+notify-slack.yml
+security-scan.yml
