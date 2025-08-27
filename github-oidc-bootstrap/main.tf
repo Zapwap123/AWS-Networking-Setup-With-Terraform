@@ -30,6 +30,12 @@ data "aws_iam_policy_document" "github_actions_assume_role_policy" {
       variable = "token.actions.githubusercontent.com:sub"
       values   = ["repo:Zapwap123/AWS-Networking-Setup-With-Terraform:*"]
     }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
   }
 }
 
