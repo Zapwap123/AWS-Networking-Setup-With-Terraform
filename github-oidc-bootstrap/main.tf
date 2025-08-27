@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "github_actions_assume_role_policy" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:Zapwap123/AWS-Networking-Setup-With-Terraform:*"]
+      values   = ["repo:Zapwap123/AWS-Networking-Setup-With-Terraform:ref:refs/heads/main"]
     }
 
     condition {
