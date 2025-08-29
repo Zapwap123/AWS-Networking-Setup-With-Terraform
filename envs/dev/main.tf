@@ -33,3 +33,38 @@ module "igw" {
     Owner       = var.owner
   }
 }
+
+module "route_table" {
+  source    = "../../modules/route_table"
+  vpc_id    = module.vpc.vpc_id
+  env       = var.env
+  subnet_id = module.public_subnet.subnet_id
+  igw_id    = module.igw.igw_id
+
+  tags = {
+    Environment = var.env
+    Owner       = var.owner
+  }
+}
+
+module "aws_security_group" {
+  source = "../../modules/security_group"
+  vpc_id = module.vpc.vpc_id
+  env    = var.env
+
+  tags = {
+    Environment = var.env
+    Owner       = var.owner
+  }
+}
+
+module "nacl" {
+  source = "../../modules/nacl"
+  vpc_id = module.vpc.vpc_id
+  env    = var.env
+
+  tags = {
+    Environment = var.env
+    Owner       = var.owner
+  }
+}
