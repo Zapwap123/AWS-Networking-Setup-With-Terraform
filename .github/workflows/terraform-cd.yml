@@ -8,6 +8,7 @@ on:
 
 jobs:
   terraform-cd:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -46,3 +47,16 @@ jobs:
           TF_VAR_az: ${{ secrets.AZ }}
           TF_VAR_owner: ${{ secrets.OWNER }}
         run: terraform apply -auto-approve -input=false
+
+      - name: Wait 15 minutes before destroy
+        run: sleep 600
+
+      - name: Terraform Destroy
+        id: destroy
+        env:
+          TF_VAR_env: ${{ secrets.ENV }}
+          TF_VAR_vpc_cidr: ${{ secrets.VPC_CIDR }}
+          TF_VAR_public_subnet_cidr: ${{ secrets.PUBLIC_SUBNET_CIDR }}
+          TF_VAR_az: ${{ secrets.AZ }}
+          TF_VAR_owner: ${{ secrets.OWNER }}
+        run: terraform destroy -auto-approve -input=false
