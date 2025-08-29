@@ -1,9 +1,9 @@
 resource "aws_security_group" "this" {
-  name = "${var.env}-sg"
+  name        = "${var.env}-sg"
   description = "Allow inbound traffic"
-  vpc_id = var.vpc_id
+  vpc_id      = var.vpc_id
 
-  ingress = {
+  ingress {
     description = "Allow HTTP traffic"
     from_port   = 80
     to_port     = 80
@@ -11,7 +11,7 @@ resource "aws_security_group" "this" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress = {
+  ingress {
     description = "Allow SSH traffic"
     from_port   = 22
     to_port     = 22
@@ -20,9 +20,9 @@ resource "aws_security_group" "this" {
   }
 
   egress = {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
