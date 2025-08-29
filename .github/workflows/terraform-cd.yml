@@ -48,7 +48,7 @@ jobs:
           TF_VAR_owner: ${{ secrets.OWNER }}
         run: terraform apply -auto-approve -input=false
 
-      - name: Wait 15 minutes before destroy
+      - name: Wait 10 minutes before destroy
         run: sleep 600
 
       - name: Terraform Destroy
