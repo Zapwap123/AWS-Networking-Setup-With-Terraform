@@ -124,8 +124,9 @@ module "private_route_table" {
 }
 
 module "public_ec2" {
-  source = "./modules/ec2"
+  source = "../../modules/ec2"
 
+  name          = var.owner
   ami           = var.ami
   instance_type = var.instance_type
   subnet_id     = module.vpc.public_subnet_id
@@ -139,8 +140,9 @@ module "public_ec2" {
 }
 
 module "private_ec2" {
-  source = "./modules/ec2"
+  source = "../../modules/ec2"
 
+  name          = var.owner
   ami           = var.ami
   instance_type = var.instance_type
   subnet_id     = module.vpc.private_subnet_id
