@@ -46,6 +46,8 @@ jobs:
           TF_VAR_public_subnet_cidr: ${{ secrets.PUBLIC_SUBNET_CIDR }}
           TF_VAR_az: ${{ secrets.AZ }}
           TF_VAR_owner: ${{ secrets.OWNER }}
+          TF_VAR_private_subnet_cidr: ${{ secrets.PRIVATE_SUBNET_CIDR }}
+          TF_VAR_private_az: ${{ secrets.PRIVATE_AZ }}
         run: terraform apply -auto-approve -input=false
 
       - name: Wait 10 minutes before destroy
@@ -59,4 +61,6 @@ jobs:
           TF_VAR_public_subnet_cidr: ${{ secrets.PUBLIC_SUBNET_CIDR }}
           TF_VAR_az: ${{ secrets.AZ }}
           TF_VAR_owner: ${{ secrets.OWNER }}
+          TF_VAR_private_subnet_cidr: ${{ secrets.PRIVATE_SUBNET_CIDR }}
+          TF_VAR_private_az: ${{ secrets.PRIVATE_AZ }}
         run: terraform destroy -auto-approve -input=false
