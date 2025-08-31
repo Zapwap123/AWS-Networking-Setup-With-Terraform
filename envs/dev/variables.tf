@@ -22,3 +22,13 @@ variable "owner" {
   description = "Owner/team responsible for the environment"
   type        = string
 }
+
+variable "private_subnet_cidr" {
+  description = "CIDR block for the private subnet"
+  type        = string
+}
+
+variable "private_az" {
+  description = "Availability Zone for the private subnet"
+  type        = string
+}

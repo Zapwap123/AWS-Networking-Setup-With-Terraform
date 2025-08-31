@@ -3,7 +3,8 @@ variable "vpc_id" {
 }
 
 variable "igw_id" {
-  type = string
+  type    = string
+  default = null
 }
 
 variable "subnet_id" {
@@ -18,4 +19,10 @@ variable "env" {
 variable "tags" {
   type    = map(string)
   default = {}
+}
+
+# Allow switching between public and private route tables
+variable "type" {
+  type    = string
+  default = "public"
 }

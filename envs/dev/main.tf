@@ -1,3 +1,4 @@
+# The project VPC
 module "vpc" {
   source   = "../../modules/vpc"
   env      = var.env
@@ -9,6 +10,7 @@ module "vpc" {
   }
 }
 
+# The public subnet
 module "public_subnet" {
   source      = "../../modules/subnet"
   env         = var.env
@@ -23,6 +25,7 @@ module "public_subnet" {
   }
 }
 
+# The Internet Gateway to allow internet access
 module "igw" {
   source = "../../modules/igw"
   vpc_id = module.vpc.vpc_id
@@ -34,12 +37,14 @@ module "igw" {
   }
 }
 
-module "route_table" {
+# The route table for the public subnet
+module "public_route_table" {
   source    = "../../modules/route_table"
   vpc_id    = module.vpc.vpc_id
   env       = var.env
   subnet_id = module.public_subnet.subnet_id
   igw_id    = module.igw.igw_id
+  type      = "public"
 
   tags = {
     Environment = var.env
@@ -47,6 +52,7 @@ module "route_table" {
   }
 }
 
+# The Security Group
 module "aws_security_group" {
   source = "../../modules/security_group"
   vpc_id = module.vpc.vpc_id
@@ -58,11 +64,59 @@ module "aws_security_group" {
   }
 }
 
-module "nacl" {
-  source = "../../modules/nacl"
-  vpc_id = module.vpc.vpc_id
-  env    = var.env
+# The private subnet
+module "private_subnet" {
+  source      = "../../modules/subnet"
+  env         = var.env
+  vpc_id      = module.vpc.vpc_id
+  subnet_cidr = var.private_subnet_cidr
+  az          = var.private_az
+  public      = false
 
+  tags = {
+    Environment = var.env
+    Owner       = var.owner
+  }
+}
+
+# The Network ACL for the Public Subnet
+module "public_nacl" {
+  source    = "../../modules/nacl"
+  vpc_id    = module.vpc.vpc_id
+  env       = var.env
+  type      = "public"
+  vpc_cidr  = var.vpc_cidr
+  subnet_id = module.public_subnet.subnet_id
+
+  tags = {
+    Environment = var.env
+    Owner       = var.owner
+  }
+}
+
+# The Network ACL for the Private Subnet
+module "private_nacl" {
+  source    = "../../modules/nacl"
+  vpc_id    = module.vpc.vpc_id
+  env       = var.env
+  type      = "private"
+  vpc_cidr  = var.vpc_cidr
+  subnet_id = module.private_subnet.subnet_id
+
+  tags = {
+    Environment = var.env
+    Owner       = var.owner
+  }
+
+}
+
+# Private Route Table
+module "private_route_table" {
+  source    = "../../modules/route_table"
+  vpc_id    = module.vpc.vpc_id
+  env       = var.env
+  subnet_id = module.private_subnet.subnet_id
+  type      = "private"
   tags = {
     Environment = var.env
     Owner       = var.owner
