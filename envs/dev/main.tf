@@ -129,7 +129,7 @@ module "public_ec2" {
   name          = var.owner
   ami           = var.ami
   instance_type = var.instance_type
-  subnet_id     = module.vpc.public_subnet_id
+  subnet_id     = module.public_subnet_id
   key_name      = var.key_name
   sg_ids        = [module.sg.public_sg_id]
   public_ip     = true
@@ -145,7 +145,7 @@ module "private_ec2" {
   name          = var.owner
   ami           = var.ami
   instance_type = var.instance_type
-  subnet_id     = module.vpc.private_subnet_id
+  subnet_id     = module.private_subnet_id
   key_name      = var.key_name
   sg_ids        = [module.sg.private_sg_id]
   public_ip     = false
