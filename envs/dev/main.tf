@@ -53,7 +53,7 @@ module "public_route_table" {
 }
 
 # The Security Group
-module "aws_security_group" {
+module "sg" {
   source = "../../modules/security_group"
   vpc_id = module.vpc.vpc_id
   env    = var.env
@@ -121,4 +121,34 @@ module "private_route_table" {
     Environment = var.env
     Owner       = var.owner
   }
+}
+
+module "public_ec2" {
+  source = "./modules/ec2"
+
+  ami           = var.ami
+  instance_type = var.instance_type
+  subnet_id     = module.vpc.public_subnet_id
+  key_name      = var.key_name
+  sg_ids        = [module.sg.public_sg_id]
+  public_ip     = true
+
+  env  = var.env
+  type = "public"
+  tags = var.tags
+}
+
+module "private_ec2" {
+  source = "./modules/ec2"
+
+  ami           = var.ami
+  instance_type = var.instance_type
+  subnet_id     = module.vpc.private_subnet_id
+  key_name      = var.key_name
+  sg_ids        = [module.sg.private_sg_id]
+  public_ip     = false
+
+  env  = var.env
+  type = "private"
+  tags = var.tags
 }

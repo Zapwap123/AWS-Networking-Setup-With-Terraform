@@ -48,6 +48,9 @@ jobs:
           TF_VAR_owner: ${{ secrets.OWNER }}
           TF_VAR_private_subnet_cidr: ${{ secrets.PRIVATE_SUBNET_CIDR }}
           TF_VAR_private_az: ${{ secrets.PRIVATE_AZ }}
+          TF_VAR_ami: ${{ secrets.AMI }}
+          TF_VAR_instance_type: ${{ secrets.EC2_INSTANCE_TYPE }}
+          TF_VAR_key_name: ${{ secrets.KEY_NAME }}
         run: terraform apply -auto-approve -input=false
 
       - name: Wait 10 minutes before destroy
@@ -63,4 +66,7 @@ jobs:
           TF_VAR_owner: ${{ secrets.OWNER }}
           TF_VAR_private_subnet_cidr: ${{ secrets.PRIVATE_SUBNET_CIDR }}
           TF_VAR_private_az: ${{ secrets.PRIVATE_AZ }}
+          TF_VAR_ami: ${{ secrets.AMI }}
+          TF_VAR_instance_type: ${{ secrets.EC2_INSTANCE_TYPE }}
+          TF_VAR_key_name: ${{ secrets.KEY_NAME }}
         run: terraform destroy -auto-approve -input=false
