@@ -22,9 +22,16 @@ output "private_route_table_id" {
   value = module.private_route_table.route_table_id
 }
 
-output "security_group_id" {
-  value = module.aws_security_group.security_group_id
+output "public_sg_id" {
+  description = "Public security group ID"
+  value       = module.sg.public_sg_id
 }
+
+output "private_sg_id" {
+  description = "Private security group ID"
+  value       = module.sg.private_sg_id
+}
+
 
 output "public_nacl_id" {
   value = module.public_nacl.nacl_id
