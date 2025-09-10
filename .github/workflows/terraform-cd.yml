@@ -1,18 +1,24 @@
-name: Terraform CD
+name: Terraform CI
 
 on:
-  workflow_run:
-    workflows: ["Terraform CI"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  terraform-cd:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  terraform-ci:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        env-set: [1, 2] # 1 = dev, 2 = dev2
+
     defaults:
       run:
-        working-directory: ./envs/dev
+        working-directory: ./envs/${{ matrix.env-set == 1 && 'dev' || 'dev2' }}
 
     permissions:
       contents: read
@@ -38,35 +44,30 @@ jobs:
         id: init
         run: terraform init
 
-      - name: Terraform Apply
-        id: apply
+      - name: Terraform Format Check
+        id: format
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
         env:
-          TF_VAR_env: ${{ secrets.ENV }}
-          TF_VAR_vpc_cidr: ${{ secrets.VPC_CIDR }}
-          TF_VAR_public_subnet_cidr: ${{ secrets.PUBLIC_SUBNET_CIDR }}
-          TF_VAR_az: ${{ secrets.AZ }}
+          TF_VAR_env: ${{ secrets[format('ENV{0}', matrix.env-set)] }}
+          TF_VAR_vpc_cidr: ${{ secrets[format('VPC_CIDR{0}', matrix.env-set)] }}
+          TF_VAR_public_subnet_cidr: ${{ secrets[format('PUBLIC_SUBNET_CIDR{0}', matrix.env-set)] }}
+          TF_VAR_az: ${{ secrets[format('AZ{0}', matrix.env-set)] }}
           TF_VAR_owner: ${{ secrets.OWNER }}
-          TF_VAR_private_subnet_cidr: ${{ secrets.PRIVATE_SUBNET_CIDR }}
-          TF_VAR_private_az: ${{ secrets.PRIVATE_AZ }}
+          TF_VAR_private_subnet_cidr: ${{ secrets[format('PRIVATE_SUBNET_CIDR{0}', matrix.env-set)] }}
+          TF_VAR_private_az: ${{ secrets[format('PRIVATE_AZ{0}', matrix.env-set)] }}
           TF_VAR_ami: ${{ secrets.AMI }}
           TF_VAR_instance_type: ${{ secrets.EC2_INSTANCE_TYPE }}
           TF_VAR_key_name: ${{ secrets.KEY_NAME }}
-        run: terraform apply -auto-approve -input=false
+          TF_VAR_requester_region: ${{ secrets.REQUESTER_REGION }}
+          TF_VAR_accepter_region: ${{ secrets.ACCEPTER_REGION }}
+        run: terraform plan -input=false
 
-      - name: Wait 10 minutes before destroy
-        run: sleep 600
-
-      - name: Terraform Destroy
-        id: destroy
-        env:
-          TF_VAR_env: ${{ secrets.ENV }}
-          TF_VAR_vpc_cidr: ${{ secrets.VPC_CIDR }}
-          TF_VAR_public_subnet_cidr: ${{ secrets.PUBLIC_SUBNET_CIDR }}
-          TF_VAR_az: ${{ secrets.AZ }}
-          TF_VAR_owner: ${{ secrets.OWNER }}
-          TF_VAR_private_subnet_cidr: ${{ secrets.PRIVATE_SUBNET_CIDR }}
-          TF_VAR_private_az: ${{ secrets.PRIVATE_AZ }}
-          TF_VAR_ami: ${{ secrets.AMI }}
-          TF_VAR_instance_type: ${{ secrets.EC2_INSTANCE_TYPE }}
-          TF_VAR_key_name: ${{ secrets.KEY_NAME }}
-        run: terraform destroy -auto-approve -input=false
+      - name: Security Scan (tfsec)
+        uses: aquasecurity/tfsec-action@v1.0.3

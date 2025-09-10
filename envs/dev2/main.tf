@@ -1,14 +1,3 @@
-provider "aws" {
-  alias  = "requester"
-  region = var.requester_region
-}
-
-provider "aws" {
-  alias  = "accepter"
-  region = var.accepter_region
-}
-
-
 # The project VPC
 module "vpc" {
   source   = "../../modules/vpc"
@@ -164,19 +153,4 @@ module "private_ec2" {
   env  = var.env
   type = "private"
   tags = var.tags
-}
-
-module "vpc_peering" {
-  source = "../../modules/vpc_peering"
-
-  requester_vpc_id = module.vpc.vpc_id
-  accepter_vpc_id  = data.terraform_remote_state.dev2.outputs.vpc_id
-  requester_region = var.requester_region
-  accepter_region  = var.accepter_region
-  peering_name     = "${var.env}-to-dev2-peering"
-
-  providers = {
-    aws.requester = aws.requester
-    aws.accepter  = aws.accepter
-  }
 }
