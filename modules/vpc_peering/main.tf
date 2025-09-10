@@ -1,11 +1,20 @@
-# VPC peering request (always created from requester side)
+terraform {
+  required_providers {
+    aws = {
+      source                = "hashicorp/aws"
+      version               = "~> 5.0"
+      configuration_aliases = [aws.requester, aws.accepter]
+    }
+  }
+}
+
+# Requester side (always created here)
 resource "aws_vpc_peering_connection" "this" {
   vpc_id      = var.requester_vpc_id
   peer_vpc_id = var.accepter_vpc_id
   peer_region = var.accepter_region
 
-  # Auto accept only if same region
-  auto_accept = var.requester_region == var.accepter_region ? true : false
+  auto_accept = var.requester_region == var.accepter_region
 
   tags = {
     Name = var.peering_name
@@ -14,7 +23,7 @@ resource "aws_vpc_peering_connection" "this" {
   provider = aws.requester
 }
 
-# Explicit accepter resource (needed for cross-region or cross-account)
+# Explicit accepter side (only for cross-region)
 resource "aws_vpc_peering_connection_accepter" "this" {
   count = var.requester_region == var.accepter_region ? 0 : 1
 
@@ -26,4 +35,8 @@ resource "aws_vpc_peering_connection_accepter" "this" {
   }
 
   provider = aws.accepter
+}
+
+output "peering_id" {
+  value = aws_vpc_peering_connection.this.id
 }
