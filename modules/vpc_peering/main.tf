@@ -12,7 +12,9 @@ terraform {
 resource "aws_vpc_peering_connection" "this" {
   vpc_id      = var.requester_vpc_id
   peer_vpc_id = var.accepter_vpc_id
-  peer_region = var.accepter_region
+
+  # Only set peer_region if requester and accepter regions differ
+  peer_region = var.requester_region == var.accepter_region ? null : var.accepter_region
 
   auto_accept = var.requester_region == var.accepter_region
 
@@ -37,6 +39,3 @@ resource "aws_vpc_peering_connection_accepter" "this" {
   provider = aws.accepter
 }
 
-output "peering_id" {
-  value = aws_vpc_peering_connection.this.id
-}
