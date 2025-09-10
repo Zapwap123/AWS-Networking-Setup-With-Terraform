@@ -55,13 +55,13 @@ jobs:
       - name: Terraform Plan
         id: plan
         env:
-          TF_VAR_env: ${{ secrets[format('ENV{0}', matrix.env-set)] }}
-          TF_VAR_vpc_cidr: ${{ secrets[format('VPC_CIDR{0}', matrix.env-set)] }}
-          TF_VAR_public_subnet_cidr: ${{ secrets[format('PUBLIC_SUBNET_CIDR{0}', matrix.env-set)] }}
-          TF_VAR_az: ${{ secrets[format('AZ{0}', matrix.env-set)] }}
+          TF_VAR_env: ${{ matrix.env-set == 1 && secrets.ENV || secrets.ENV2 }}
+          TF_VAR_vpc_cidr: ${{ matrix.env-set == 1 && secrets.VPC_CIDR || secrets.VPC_CIDR2 }}
+          TF_VAR_public_subnet_cidr: ${{ matrix.env-set == 1 && secrets.PUBLIC_SUBNET_CIDR || secrets.PUBLIC_SUBNET_CIDR2 }}
+          TF_VAR_az: ${{ matrix.env-set == 1 && secrets.AZ || secrets.AZ2 }}
           TF_VAR_owner: ${{ secrets.OWNER }}
-          TF_VAR_private_subnet_cidr: ${{ secrets[format('PRIVATE_SUBNET_CIDR{0}', matrix.env-set)] }}
-          TF_VAR_private_az: ${{ secrets[format('PRIVATE_AZ{0}', matrix.env-set)] }}
+          TF_VAR_private_subnet_cidr: ${{ matrix.env-set == 1 && secrets.PRIVATE_SUBNET_CIDR || secrets.PRIVATE_SUBNET_CIDR2 }}
+          TF_VAR_private_az: ${{ matrix.env-set == 1 && secrets.PRIVATE_AZ || secrets.PRIVATE_AZ2 }}
           TF_VAR_ami: ${{ secrets.AMI }}
           TF_VAR_instance_type: ${{ secrets.EC2_INSTANCE_TYPE }}
           TF_VAR_key_name: ${{ secrets.KEY_NAME }}
