@@ -166,6 +166,15 @@ module "private_ec2" {
   tags = var.tags
 }
 
+data "terraform_remote_state" "dev2" {
+  backend = "s3"
+  config = {
+    bucket = "zeth-networking-terraform-states"
+    key    = "networking/dev2/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
 module "vpc_peering" {
   source = "../../modules/vpc_peering"
 
