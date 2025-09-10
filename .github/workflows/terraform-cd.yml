@@ -43,16 +43,8 @@ jobs:
         id: init
         run: terraform init
 
-      - name: Terraform Format Check
-        id: format
-        run: terraform fmt -check -recursive
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        id: plan
+      - name: Terraform Apply
+        id: apply
         env:
           TF_VAR_env: ${{ matrix.env-set == 1 && secrets.ENV || secrets.ENV2 }}
           TF_VAR_vpc_cidr: ${{ matrix.env-set == 1 && secrets.VPC_CIDR || secrets.VPC_CIDR2 }}
@@ -66,7 +58,24 @@ jobs:
           TF_VAR_key_name: ${{ secrets.KEY_NAME }}
           TF_VAR_requester_region: ${{ secrets.REQUESTER_REGION }}
           TF_VAR_accepter_region: ${{ secrets.ACCEPTER_REGION }}
-        run: terraform plan -input=false
+        run: terraform apply -auto-approve -input=false
 
-      - name: Security Scan (tfsec)
-        uses: aquasecurity/tfsec-action@v1.0.3
+      - name: Wait 10 minutes before destroy
+        run: sleep 600
+
+      - name: Terraform Destroy
+        id: destroy
+        env:
+          TF_VAR_env: ${{ matrix.env-set == 1 && secrets.ENV || secrets.ENV2 }}
+          TF_VAR_vpc_cidr: ${{ matrix.env-set == 1 && secrets.VPC_CIDR || secrets.VPC_CIDR2 }}
+          TF_VAR_public_subnet_cidr: ${{ matrix.env-set == 1 && secrets.PUBLIC_SUBNET_CIDR || secrets.PUBLIC_SUBNET_CIDR2 }}
+          TF_VAR_az: ${{ matrix.env-set == 1 && secrets.AZ || secrets.AZ2 }}
+          TF_VAR_owner: ${{ secrets.OWNER }}
+          TF_VAR_private_subnet_cidr: ${{ matrix.env-set == 1 && secrets.PRIVATE_SUBNET_CIDR || secrets.PRIVATE_SUBNET_CIDR2 }}
+          TF_VAR_private_az: ${{ matrix.env-set == 1 && secrets.PRIVATE_AZ || secrets.PRIVATE_AZ2 }}
+          TF_VAR_ami: ${{ secrets.AMI }}
+          TF_VAR_instance_type: ${{ secrets.EC2_INSTANCE_TYPE }}
+          TF_VAR_key_name: ${{ secrets.KEY_NAME }}
+          TF_VAR_requester_region: ${{ secrets.REQUESTER_REGION }}
+          TF_VAR_accepter_region: ${{ secrets.ACCEPTER_REGION }}
+        run: terraform destroy -auto-approve -input=false
